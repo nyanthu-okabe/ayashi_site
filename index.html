@@ -1,19 +1,249 @@
-<html>
-  <head>
-    <h1>ConaStudio Official</h1>
-    <p>
-      What's can the Studio done
-    </p>
-  </head>
-  <script>
-    let userName = prompt('rogin', 's');
 
-    if (userName === null) {
-      alert('please loggin');
-    } else if (userName === '') {
-      alert('名前が入力されませんでした。');
-    } else {
-      alert(`ようこそ、${userName}さん！`);
-    }
-  </script>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platformer Game (Pyxel)</title>
+  <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <pyxel-run
+    script='
+      import pyxel
+
+      class Entity:
+          def __init__(self, x, y, width, height, color=11, frame_color=None):
+              self.x = x
+              self.y = y
+              self.width = width
+              self.height = height
+              self.color = color
+              self.frame_color = frame_color or color
+
+          def draw(self):
+              if self.frame_color:
+                  pyxel.rectb(self.x, self.y, self.width, self.height, self.frame_color)
+              pyxel.rect(self.x, self.y, self.width, self.height, self.color)
+
+          def is_colliding(self, x, y, width, height):
+              return (
+                  x < self.x + self.width
+                  and x + width > self.x
+                  and y < self.y + self.height
+                  and y + height > self.y
+              )
+
+
+      class Player(Entity):
+          def __init__(self, x, y, width, height, color=11):
+              super().__init__(x, y, width, height, color)
+              self.vx = 0.0
+              self.vy = 0.0
+              self.life = 3
+              self.gravity = 0.5
+              self.jump_strength = -5.0
+              self.move_speed = 2.0
+              self.on_ground = False
+
+          def update(self, blocks):
+              self.vx = 0.0
+              if pyxel.btn(pyxel.KEY_LEFT) or self.is_touched_left():
+                  self.vx = -self.move_speed
+              elif pyxel.btn(pyxel.KEY_RIGHT) or self.is_touched_right():
+                  self.vx = self.move_speed
+              if (pyxel.btnp(pyxel.KEY_SPACE) or self.is_touched_jump()) and self.on_ground:
+                  self.vy = self.jump_strength
+
+              self.vy += self.gravity
+              next_x = self.x + self.vx
+              next_y = self.y + self.vy
+
+              next_x, next_y = self.handle_collisions(next_x, next_y, blocks)
+
+              self.x = next_x
+              self.y = next_y
+
+              self.on_ground = self.check_on_ground(blocks)
+
+          def is_touched_left(self):
+              return pyxel.mouse_x < pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20
+
+          def is_touched_right(self):
+              return pyxel.mouse_x >= pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20
+
+          def is_touched_jump(self):
+              return pyxel.mouse_x >= pyxel.width - 40 and pyxel.mouse_y <= 40
+
+          def handle_collisions(self, next_x, next_y, blocks):
+              for block in blocks:
+                  if block.is_colliding(next_x, self.y, self.width, self.height):
+                      if self.vx > 0:
+                          next_x = block.x - self.width
+                      elif self.vx < 0:
+                          next_x = block.x + block.width
+                      self.vx = 0
+                  if block.is_colliding(self.x, next_y, self.width, self.height):
+                      if self.vy > 0:
+                          next_y = block.y - self.height
+                      elif self.vy < 0:
+                          next_y = block.y + block.height
+                      self.vy = 0
+              return next_x, next_y
+
+          def check_on_ground(self, blocks):
+              for block in blocks:
+                  if block.is_colliding(self.x, self.y + 1, self.width, self.height):
+                      return True
+              return False
+
+          def draw(self):
+              pyxel.rect(self.x, self.y, self.width, self.height, self.color)
+
+
+      class Mob(Entity):
+          def __init__(self, x, y, width, height, color=8):
+              super().__init__(x, y, width, height, color)
+              self.vx = 1
+
+          def update(self, blocks):
+              next_x = self.x + self.vx
+              collision = False
+              for block in blocks:
+                  if block.is_colliding(next_x, self.y, self.width, self.height):
+                      collision = True
+                      break
+              if collision:
+                  self.vx = -self.vx
+              else:
+                  self.x = next_x
+
+      class PowerUp(Entity):
+          def __init__(self, x, y, width, height, color=10, effect=None):
+              super().__init__(x, y, width, height, color)
+              self.effect = effect
+
+          def apply(self, player):
+              if self.effect == "speed":
+                  player.move_speed += 0.5
+              elif self.effect == "jump":
+                  player.jump_strength *= 1.2
+              elif self.effect == "invincibility":
+                  player.invincibility_timer = pyxel.frame_count + 300
+
+      class Collectible(Entity):
+          def __init__(self, x, y, width, height, color=14):
+              super().__init__(x, y, width, height, color)
+
+          def collect(self, player):
+              player.vy = -10
+              player.life += 1
+
+      class PlatformerGame:
+          def __init__(self):
+              pyxel.init(160, 120, title="Platformer Game", fps=30)
+              self.state = "TITLE"
+              self.level = 1
+              self.score = 0
+              self.life = 3
+              self.player = Player(20, 80, 8, 8)
+              self.mobs = [Mob(60, 90, 8, 8), Mob(120, 90, 8, 8)]
+              self.blocks = [
+                  Entity(0, 100, 160, 20, color=3, frame_color=7),
+                  Entity(50, 80, 20, 10, color=3, frame_color=7),
+                  Entity(100, 70, 20, 10, color=3, frame_color=7),
+              ]
+              self.powerups = [
+                  PowerUp(80, 50, 8, 8, effect="speed"),
+                  PowerUp(130, 60, 8, 8, effect="jump"),
+                  PowerUp(140, 20, 8, 8, effect="invincibility"),
+              ]
+              self.collectibles = [Collectible(70, 50, 8, 8)]
+
+              self.entities = [*self.blocks, self.player, *self.mobs, *self.powerups, *self.collectibles]
+              pyxel.run(self.update, self.draw)
+
+          def update(self):
+              if self.player.y > pyxel.height * 2:
+                  self.state = "GAME_OVER"
+              if self.state == "TITLE":
+                  if pyxel.btnp(pyxel.KEY_RETURN):
+                      self.state = "PLAY"
+              elif self.state == "PLAY":
+                  self.update_game()
+                  if self.life <= 0:
+                      self.state = "GAME_OVER"
+              elif self.state == "GAME_OVER":
+                  if pyxel.btnp(pyxel.KEY_RETURN):
+                      self.reset_game()
+
+          def update_game(self):
+              self.player.update(self.blocks)
+              for mob in self.mobs:
+                  mob.update(self.blocks)
+                  if self.player.is_colliding(mob.x, mob.y, mob.width, mob.height):
+                      if self.player.invincibility_timer < pyxel.frame_count:
+                          self.life -= 1
+                      self.mobs.remove(mob)
+                      break
+              for powerup in self.powerups[:]:
+                  if self.player.is_colliding(powerup.x, powerup.y, powerup.width, powerup.height):
+                      powerup.apply(self.player)
+                      self.powerups.remove(powerup)
+                      self.score += 100
+
+              for collectible in self.collectibles[:]:
+                  if self.player.is_colliding(collectible.x, collectible.y, collectible.width, collectible.height):
+                      collectible.collect(self.player)
+                      self.collectibles.remove(collectible)
+
+          def reset_game(self):
+              self.score = 0
+              self.life = 3
+              self.level = 1
+              self.player = Player(20, 80, 8, 8)
+              self.mobs = [Mob(60, 90, 8, 8), Mob(120, 90, 8, 8)]
+              self.powerups = [
+                  PowerUp(80, 50, 8, 8, effect="speed"),
+                  PowerUp(130, 60, 8, 8, effect="jump"),
+                  PowerUp(140, 20, 8, 8, effect="invincibility"),
+              ]
+              self.collectibles = [Collectible(70, 50, 8, 8)]
+              self.state = "TITLE"
+
+          def draw(self):
+              pyxel.cls(0)
+              camera_x = self.player.x - (pyxel.width // 2) + (self.player.width // 2)
+              camera_y = self.player.y - (pyxel.height // 2) + (self.player.height // 2)
+              pyxel.camera(camera_x, camera_y)
+
+              if self.state == "TITLE":
+                  self.state = "PLAY"
+                  pyxel.text(camera_x + 50, camera_y + 50, "Welcome to Game", pyxel.COLOR_RED)
+                  pyxel.text(camera_x + 40, camera_y + 60, "Press RETURN to Start", pyxel.COLOR_WHITE)
+              elif self.state == "PLAY":
+                  for entity in self.entities:
+                      entity.draw()
+                  pyxel.text(camera_x + 5, camera_y + 5, f"Score: {self.score}", pyxel.COLOR_WHITE)
+                  pyxel.text(camera_x + 5, camera_y + 15, f"Life: {self.life}", pyxel.COLOR_RED)
+                  pyxel.text(camera_x + 5, camera_y + 25, f"Level: {self.level}", pyxel.COLOR_GREEN)
+                  pyxel.text(camera_x + 5, camera_y + 35, f"Pos: {self.player.x:.2f}, {-self.player.y:.2f}", pyxel.COLOR_YELLOW)
+              elif self.state == "GAME_OVER":
+                  pyxel.text(camera_x + 50, camera_y + 50, "GAME OVER", pyxel.COLOR_RED)
+                  pyxel.text(camera_x + 40, camera_y + 60, "Press RETURN to Restart", pyxel.COLOR_WHITE)
+
+      PlatformerGame()
+    '
+  ></pyxel-run>
+</body>
 </html>
+
+
+
+'
+></pyxel-run>
