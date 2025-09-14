@@ -1,152 +1,147 @@
 <!doctype html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8" />
-        <title>ConaStudio</title>
-        <style>
-            body {
-                font-family: "Arial", "Helvetica", sans-serif;
-                font-size: 17px;
-                background-color: #fefefe;
-                color: #2a2a2a;
-                margin: 20px;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <title>ConaStudio</title>
+    <style>
+        body {
+            font-family: "Arial", "Helvetica", sans-serif;
+            font-size: 17px;
+            background-color: #fefefe;
+            color: #2a2a2a;
+            margin: 20px;
+        }
 
-            h2 {
-                color: #1e4d7b;
-                font-size: 32px;
-                margin-bottom: 15px;
-            }
+        h2 {
+            color: #1e4d7b;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
 
-            h3 {
-                color: #333;
-                font-size: 22px;
-                margin-top: 20px;
-            }
+        h3 {
+            color: #333;
+            font-size: 22px;
+            margin-top: 20px;
+        }
 
-            a {
-                color: #1e4d7b;
-                text-decoration: none;
-                margin-right: 12px;
-            }
+        a {
+            color: #1e4d7b;
+            text-decoration: none;
+            margin-right: 12px;
+        }
 
-            a:hover {
-                text-decoration: underline;
-            }
+        a:hover {
+            text-decoration: underline;
+        }
 
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                background-color: #fdfdfd;
-                margin-top: 15px;
-            }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #fdfdfd;
+            margin-top: 15px;
+        }
 
-            th,
-            td {
-                border: 1px solid #aaa;
-                padding: 6px 10px;
-                text-align: center;
-                font-size: 16px;
-            }
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 6px 10px;
+            text-align: center;
+            font-size: 16px;
+        }
 
-            th {
-                background-color: #e8e8e8;
-                font-weight: bold;
-            }
+        th {
+            background-color: #e8e8e8;
+            font-weight: bold;
+        }
 
-            tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-            .section {
-                display: none;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>ConaStudio</h2>
-        <a href="?section=home">Home</a>
-        <a href="?section=apps">Apps</a>
-        <a href="?section=info">Info</a>
-        <a href="?section=policy">Policy (必ず読んでください)</a>
+        .section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>ConaStudio</h2>
+    <a href="?section=home">Home</a>
+    <a href="?section=apps">Apps</a>
+    <a href="?section=info">Info</a>
+    <a href="?section=policy">Policy (必ずお読みください)</a>
 
-        <div id="home" class="section">
-            <h3>Home</h3>
-            <p>※管理者情報</p>
-            <p>
-                連絡先:
-                <a
-                    href="https://scratch.mit.edu/projects/1216659928/"
-                    target="_blank"
-                    >url</a
-                >
-            </p>
-            <p>
-                サポート:
-                <a href="https://support.conastudio.f5.si" target="_blank"
-                    >url</a
-                >
-            </p>
-        </div>
+    <div id="home" class="section">
+        <h3>Home</h3>
+        <p>※管理者情報</p>
+        <p>連絡先:
+            <a href="https://scratch.mit.edu/projects/1216659928/" target="_blank">url</a>
+        </p>
+        <p>サポート:
+            <a href="https://support.conastudio.f5.si" target="_blank">url</a>
+        </p>
+    </div>
 
-        <div id="info" class="section">
-            <h3>Info</h3>
-            <p>2025年にスタジオが生まれました</p>
-            <p>ConaStudioは非営利団体です</p>
-            <p>開発にかかる 人件費、サーバー費などを削り常に無料で配布しています</p>
-            <p>アプリはGithubにあげてあり、ユーザーたちは改造することができます</p> 
-        </div>
+    <div id="info" class="section">
+        <h3>Info</h3>
+        <p>ConaStudioは2025年に設立された非営利団体です。</p>
+        <p>開発にかかる人件費やサーバー費などの出費を抑え、常にアプリを無料で配布しています。</p>
+        <p>すべてのアプリはGitHubで公開しており、ユーザーは自由に改造することが可能です。</p>
+        <p>ConaStudioは(nyanchu studio)の子プロジェクトとして、独自のアイデアや実験的な開発を推進しています。</p>
+    </div>
 
-        <div id="apps" class="section">
-            <h3>Apps</h3>
-            <table id="appsTable">
-                <thead>
-                    <tr>
-                        <th>アプリ名</th>
-                        <th>担当者</th>
-                        <th>ダウンロード</th>
-                        <th>RepoURL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ExampleApp1</td>
-                        <td>Tanaka</td>
-                        <td><a href="#">Download</a></td>
-                        <td><a href="#">Repo</a></td>
-                    </tr>
-                    <tr>
-                        <td>ExampleApp2</td>
-                        <td>Suzuki</td>
-                        <td><a href="#">Download</a></td>
-                        <td><a href="#">Repo</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="policy" class="section">
-            <h3>Policy</h3>
-            <p>利用規約:</p>
-            <p>ConaStudioに関する全て以下に適応する</p>
-            <p>1. いかなる損害を一切負い兼ねる</p>
-            <p>2. 犯罪または犯罪となりゆることへ、ConaStudioのAppを使用することを禁止する</p>
-            <p>以上のことへ、同意したのち利用を開始してください</p>
-        </div>
+    <div id="apps" class="section">
+        <h3>Apps</h3>
+        <table id="appsTable">
+            <thead>
+                <tr>
+                    <th>アプリ名</th>
+                    <th>担当者</th>
+                    <th>ダウンロード</th>
+                    <th>RepoURL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ExampleApp1</td>
+                    <td>Tanaka</td>
+                    <td><a href="#">Download</a></td>
+                    <td><a href="#">Repo</a></td>
+                </tr>
+                <tr>
+                    <td>ExampleApp2</td>
+                    <td>Suzuki</td>
+                    <td><a href="#">Download</a></td>
+                    <td><a href="#">Repo</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <script>
-            const sections = document.querySelectorAll(".section");
-            function showSection(id) {
-                sections.forEach((sec) => {
-                    sec.style.display = sec.id === id ? "block" : "none";
-                });
-            }
-            const params = new URLSearchParams(window.location.search);
-            const section = params.get("section");
-            if (["home", "apps", "info", "policy"].includes(section)) {
-                showSection(section);
-            } else {
-                showSection("home");
-            }
-        </script>
-    </body>
+    <div id="policy" class="section">
+        <h3>Policy</h3>
+        <p>利用規約:</p>
+        <p>ConaStudioおよび提供される全てのアプリに関して、以下の規約が適用されます。</p>
+        <ol>
+            <li>いかなる損害についても、ConaStudioは一切責任を負いません。</li>
+            <li>ConaStudioのアプリを使用して、犯罪行為や違法行為に関与することを禁止します。</li>
+        </ol>
+        <p>上記に同意した上で、アプリをご利用ください。</p>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll(".section");
+        function showSection(id) {
+            sections.forEach((sec) => {
+                sec.style.display = sec.id === id ? "block" : "none";
+            });
+        }
+        const params = new URLSearchParams(window.location.search);
+        const section = params.get("section");
+        if (["home", "apps", "info", "policy"].includes(section)) {
+            showSection(section);
+        } else {
+            showSection("home");
+        }
+    </script>
+</body>
 </html>
