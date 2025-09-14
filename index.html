@@ -1,6 +1,19 @@
 <html>
-  <h1>ConaStudio Official</h1>
-  <p>
-    What's can the Studio done
-  </p>
+  <head>
+    <h1>ConaStudio Official</h1>
+    <p>
+      What's can the Studio done
+    </p>
+  </head>
+  <script>
+    let userName = prompt('rogin', 's');
+
+    if (userName === null) {
+      alert('please loggin');
+    } else if (userName === '') {
+      alert('名前が入力されませんでした。');
+    } else {
+      alert(`ようこそ、${userName}さん！`);
+    }
+  </script>
 </html>
