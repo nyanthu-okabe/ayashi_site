@@ -17,227 +17,240 @@
     script='
       import pyxel
 
-      class Entity:
-          def __init__(self, x, y, width, height, color=11, frame_color=None):
-              self.x = x
-              self.y = y
-              self.width = width
-              self.height = height
-              self.color = color
-              self.frame_color = frame_color or color
+# ------------------------------
+# 基本エンティティ
+# ------------------------------
+class Entity:
+    def __init__(self, x, y, w, h, color=11, frame_color=None):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.color = color
+        self.frame_color = frame_color or color
 
-          def draw(self):
-              if self.frame_color:
-                  pyxel.rectb(self.x, self.y, self.width, self.height, self.frame_color)
-              pyxel.rect(self.x, self.y, self.width, self.height, self.color)
+    def draw(self):
+        if self.frame_color:
+            pyxel.rectb(self.x, self.y, self.w, self.h, self.frame_color)
+        pyxel.rect(self.x, self.y, self.w, self.h, self.color)
 
-          def is_colliding(self, x, y, width, height):
-              return (
-                  x < self.x + self.width
-                  and x + width > self.x
-                  and y < self.y + self.height
-                  and y + height > self.y
-              )
-
-
-      class Player(Entity):
-          def __init__(self, x, y, width, height, color=11):
-              super().__init__(x, y, width, height, color)
-              self.vx = 0.0
-              self.vy = 0.0
-              self.life = 3
-              self.gravity = 0.5
-              self.jump_strength = -5.0
-              self.move_speed = 2.0
-              self.on_ground = False
-
-          def update(self, blocks):
-              self.vx = 0.0
-              if pyxel.btn(pyxel.KEY_LEFT) or self.is_touched_left():
-                  self.vx = -self.move_speed
-              elif pyxel.btn(pyxel.KEY_RIGHT) or self.is_touched_right():
-                  self.vx = self.move_speed
-              if (pyxel.btnp(pyxel.KEY_SPACE) or self.is_touched_jump()) and self.on_ground:
-                  self.vy = self.jump_strength
-
-              self.vy += self.gravity
-              next_x = self.x + self.vx
-              next_y = self.y + self.vy
-
-              next_x, next_y = self.handle_collisions(next_x, next_y, blocks)
-
-              self.x = next_x
-              self.y = next_y
-
-              self.on_ground = self.check_on_ground(blocks)
-
-          def is_touched_left(self):
-              return pyxel.mouse_x < pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20
-
-          def is_touched_right(self):
-              return pyxel.mouse_x >= pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20
-
-          def is_touched_jump(self):
-              return pyxel.mouse_x >= pyxel.width - 40 and pyxel.mouse_y <= 40
-
-          def handle_collisions(self, next_x, next_y, blocks):
-              for block in blocks:
-                  if block.is_colliding(next_x, self.y, self.width, self.height):
-                      if self.vx > 0:
-                          next_x = block.x - self.width
-                      elif self.vx < 0:
-                          next_x = block.x + block.width
-                      self.vx = 0
-                  if block.is_colliding(self.x, next_y, self.width, self.height):
-                      if self.vy > 0:
-                          next_y = block.y - self.height
-                      elif self.vy < 0:
-                          next_y = block.y + block.height
-                      self.vy = 0
-              return next_x, next_y
-
-          def check_on_ground(self, blocks):
-              for block in blocks:
-                  if block.is_colliding(self.x, self.y + 1, self.width, self.height):
-                      return True
-              return False
-
-          def draw(self):
-              pyxel.rect(self.x, self.y, self.width, self.height, self.color)
+    def is_colliding(self, x, y, w, h):
+        return (
+            x < self.x + self.w
+            and x + w > self.x
+            and y < self.y + self.h
+            and y + h > self.y
+        )
 
 
-      class Mob(Entity):
-          def __init__(self, x, y, width, height, color=8):
-              super().__init__(x, y, width, height, color)
-              self.vx = 1
+# ------------------------------
+# プレイヤー
+# ------------------------------
+class Player(Entity):
+    def __init__(self, x, y, w, h, color=11):
+        super().__init__(x, y, w, h, color)
+        self.vx = 0
+        self.vy = 0
+        self.on_ground = False
+        self.life = 3
+        self.gravity = 0.5
+        self.jump_strength = -5
+        self.move_speed = 2
+        self.invincibility_timer = 0
 
-          def update(self, blocks):
-              next_x = self.x + self.vx
-              collision = False
-              for block in blocks:
-                  if block.is_colliding(next_x, self.y, self.width, self.height):
-                      collision = True
-                      break
-              if collision:
-                  self.vx = -self.vx
-              else:
-                  self.x = next_x
+    def update(self, blocks):
+        self.handle_input()
+        self.vy += self.gravity
 
-      class PowerUp(Entity):
-          def __init__(self, x, y, width, height, color=10, effect=None):
-              super().__init__(x, y, width, height, color)
-              self.effect = effect
+        # 予測移動
+        next_x = self.x + self.vx
+        next_y = self.y + self.vy
 
-          def apply(self, player):
-              if self.effect == "speed":
-                  player.move_speed += 0.5
-              elif self.effect == "jump":
-                  player.jump_strength *= 1.2
-              elif self.effect == "invincibility":
-                  player.invincibility_timer = pyxel.frame_count + 300
+        # 衝突処理
+        next_x, next_y = self.handle_collisions(next_x, next_y, blocks)
 
-      class Collectible(Entity):
-          def __init__(self, x, y, width, height, color=14):
-              super().__init__(x, y, width, height, color)
+        self.x = next_x
+        self.y = next_y
+        self.on_ground = self.check_on_ground(blocks)
 
-          def collect(self, player):
-              player.vy = -10
-              player.life += 1
+    def handle_input(self):
+        self.vx = 0
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.mouse_x < pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20:
+            self.vx = -self.move_speed
+        elif pyxel.btn(pyxel.KEY_RIGHT) or pyxel.mouse_x >= pyxel.width // 2 and pyxel.mouse_y > pyxel.height - 20:
+            self.vx = self.move_speed
 
-      class PlatformerGame:
-          def __init__(self):
-              pyxel.init(160, 120, title="Platformer Game", fps=30)
-              self.state = "TITLE"
-              self.level = 1
-              self.score = 0
-              self.life = 3
-              self.player = Player(20, 80, 8, 8)
-              self.mobs = [Mob(60, 90, 8, 8), Mob(120, 90, 8, 8)]
-              self.blocks = [
-                  Entity(0, 100, 160, 20, color=3, frame_color=7),
-                  Entity(50, 80, 20, 10, color=3, frame_color=7),
-                  Entity(100, 70, 20, 10, color=3, frame_color=7),
-              ]
-              self.powerups = [
-                  PowerUp(80, 50, 8, 8, effect="speed"),
-                  PowerUp(130, 60, 8, 8, effect="jump"),
-                  PowerUp(140, 20, 8, 8, effect="invincibility"),
-              ]
-              self.collectibles = [Collectible(70, 50, 8, 8)]
+        if (pyxel.btnp(pyxel.KEY_SPACE) or (pyxel.mouse_x >= pyxel.width - 40 and pyxel.mouse_y <= 40)) and self.on_ground:
+            self.vy = self.jump_strength
 
-              self.entities = [*self.blocks, self.player, *self.mobs, *self.powerups, *self.collectibles]
-              pyxel.run(self.update, self.draw)
+    def handle_collisions(self, next_x, next_y, blocks):
+        for block in blocks:
+            # X方向
+            if block.is_colliding(next_x, self.y, self.w, self.h):
+                if self.vx > 0:
+                    next_x = block.x - self.w
+                elif self.vx < 0:
+                    next_x = block.x + block.w
+                self.vx = 0
 
-          def update(self):
-              if self.player.y > pyxel.height * 2:
-                  self.state = "GAME_OVER"
-              if self.state == "TITLE":
-                  if pyxel.btnp(pyxel.KEY_RETURN):
-                      self.state = "PLAY"
-              elif self.state == "PLAY":
-                  self.update_game()
-                  if self.life <= 0:
-                      self.state = "GAME_OVER"
-              elif self.state == "GAME_OVER":
-                  if pyxel.btnp(pyxel.KEY_RETURN):
-                      self.reset_game()
+            # Y方向
+            if block.is_colliding(self.x, next_y, self.w, self.h):
+                if self.vy > 0:
+                    next_y = block.y - self.h
+                elif self.vy < 0:
+                    next_y = block.y + block.h
+                self.vy = 0
+        return next_x, next_y
 
-          def update_game(self):
-              self.player.update(self.blocks)
-              for mob in self.mobs:
-                  mob.update(self.blocks)
-                  if self.player.is_colliding(mob.x, mob.y, mob.width, mob.height):
-                      if self.player.invincibility_timer < pyxel.frame_count:
-                          self.life -= 1
-                      self.mobs.remove(mob)
-                      break
-              for powerup in self.powerups[:]:
-                  if self.player.is_colliding(powerup.x, powerup.y, powerup.width, powerup.height):
-                      powerup.apply(self.player)
-                      self.powerups.remove(powerup)
-                      self.score += 100
+    def check_on_ground(self, blocks):
+        for block in blocks:
+            if block.is_colliding(self.x, self.y + 1, self.w, self.h):
+                return True
+        return False
 
-              for collectible in self.collectibles[:]:
-                  if self.player.is_colliding(collectible.x, collectible.y, collectible.width, collectible.height):
-                      collectible.collect(self.player)
-                      self.collectibles.remove(collectible)
+    def draw(self):
+        pyxel.rect(self.x, self.y, self.w, self.h, self.color)
 
-          def reset_game(self):
-              self.score = 0
-              self.life = 3
-              self.level = 1
-              self.player = Player(20, 80, 8, 8)
-              self.mobs = [Mob(60, 90, 8, 8), Mob(120, 90, 8, 8)]
-              self.powerups = [
-                  PowerUp(80, 50, 8, 8, effect="speed"),
-                  PowerUp(130, 60, 8, 8, effect="jump"),
-                  PowerUp(140, 20, 8, 8, effect="invincibility"),
-              ]
-              self.collectibles = [Collectible(70, 50, 8, 8)]
-              self.state = "TITLE"
 
-          def draw(self):
-              pyxel.cls(0)
-              camera_x = self.player.x - (pyxel.width // 2) + (self.player.width // 2)
-              camera_y = self.player.y - (pyxel.height // 2) + (self.player.height // 2)
-              pyxel.camera(camera_x, camera_y)
+# ------------------------------
+# 敵キャラ
+# ------------------------------
+class Mob(Entity):
+    def __init__(self, x, y, w, h, color=8):
+        super().__init__(x, y, w, h, color)
+        self.vx = 1
 
-              if self.state == "TITLE":
-                  self.state = "PLAY"
-                  pyxel.text(camera_x + 50, camera_y + 50, "Welcome to Game", pyxel.COLOR_RED)
-                  pyxel.text(camera_x + 40, camera_y + 60, "Press RETURN to Start", pyxel.COLOR_WHITE)
-              elif self.state == "PLAY":
-                  for entity in self.entities:
-                      entity.draw()
-                  pyxel.text(camera_x + 5, camera_y + 5, f"Score: {self.score}", pyxel.COLOR_WHITE)
-                  pyxel.text(camera_x + 5, camera_y + 15, f"Life: {self.life}", pyxel.COLOR_RED)
-                  pyxel.text(camera_x + 5, camera_y + 25, f"Level: {self.level}", pyxel.COLOR_GREEN)
-                  pyxel.text(camera_x + 5, camera_y + 35, f"Pos: {self.player.x:.2f}, {-self.player.y:.2f}", pyxel.COLOR_YELLOW)
-              elif self.state == "GAME_OVER":
-                  pyxel.text(camera_x + 50, camera_y + 50, "GAME OVER", pyxel.COLOR_RED)
-                  pyxel.text(camera_x + 40, camera_y + 60, "Press RETURN to Restart", pyxel.COLOR_WHITE)
+    def update(self, blocks):
+        next_x = self.x + self.vx
+        if any(block.is_colliding(next_x, self.y, self.w, self.h) for block in blocks):
+            self.vx = -self.vx
+        else:
+            self.x = next_x
 
-      PlatformerGame()
+
+# ------------------------------
+# パワーアップ
+# ------------------------------
+class PowerUp(Entity):
+    def __init__(self, x, y, w, h, color=10, effect=None):
+        super().__init__(x, y, w, h, color)
+        self.effect = effect
+
+    def apply(self, player):
+        if self.effect == "speed":
+            player.move_speed += 0.5
+        elif self.effect == "jump":
+            player.jump_strength *= 1.2
+        elif self.effect == "invincibility":
+            player.invincibility_timer = pyxel.frame_count + 300
+
+
+# ------------------------------
+# 収集アイテム
+# ------------------------------
+class Collectible(Entity):
+    def __init__(self, x, y, w, h, color=14):
+        super().__init__(x, y, w, h, color)
+
+    def collect(self, player):
+        player.vy = -10
+        player.life += 1
+
+
+# ------------------------------
+# ゲーム本体
+# ------------------------------
+class PlatformerGame:
+    def __init__(self):
+        pyxel.init(160, 120, title="Platformer Game", fps=30)
+
+        self.state = "TITLE"
+        self.level = 1
+        self.score = 0
+        self.life = 3
+
+        self.reset_game()
+        pyxel.run(self.update, self.draw)
+
+    def reset_game(self):
+        self.player = Player(20, 80, 8, 8)
+        self.mobs = [Mob(60, 90, 8, 8), Mob(120, 90, 8, 8)]
+        self.blocks = [
+            Entity(0, 100, 160, 20, color=3, frame_color=7),
+            Entity(50, 80, 20, 10, color=3, frame_color=7),
+            Entity(100, 70, 20, 10, color=3, frame_color=7),
+        ]
+        self.powerups = [
+            PowerUp(80, 50, 8, 8, effect="speed"),
+            PowerUp(130, 60, 8, 8, effect="jump"),
+            PowerUp(140, 20, 8, 8, effect="invincibility"),
+        ]
+        self.collectibles = [Collectible(70, 50, 8, 8)]
+        self.entities = [*self.blocks, self.player, *self.mobs, *self.powerups, *self.collectibles]
+        self.state = "TITLE"
+
+    def update(self):
+        if self.state == "TITLE":
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self.state = "PLAY"
+        elif self.state == "PLAY":
+            self.update_game()
+            if self.life <= 0 or self.player.y > pyxel.height * 2:
+                self.state = "GAME_OVER"
+        elif self.state == "GAME_OVER":
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self.reset_game()
+
+    def update_game(self):
+        self.player.update(self.blocks)
+
+        # 敵との衝突
+        for mob in self.mobs[:]:
+            mob.update(self.blocks)
+            if self.player.is_colliding(mob.x, mob.y, mob.w, mob.h):
+                if pyxel.frame_count > getattr(self.player, "invincibility_timer", 0):
+                    self.life -= 1
+                self.mobs.remove(mob)
+
+        # パワーアップ
+        for powerup in self.powerups[:]:
+            if self.player.is_colliding(powerup.x, powerup.y, powerup.w, powerup.h):
+                powerup.apply(self.player)
+                self.powerups.remove(powerup)
+                self.score += 100
+
+        # 収集アイテム
+        for collectible in self.collectibles[:]:
+            if self.player.is_colliding(collectible.x, collectible.y, collectible.w, collectible.h):
+                collectible.collect(self.player)
+                self.collectibles.remove(collectible)
+
+    def draw(self):
+        pyxel.cls(0)
+        cam_x = self.player.x - pyxel.width // 2 + self.player.w // 2
+        cam_y = self.player.y - pyxel.height // 2 + self.player.h // 2
+        pyxel.camera(cam_x, cam_y)
+
+        if self.state == "TITLE":
+            pyxel.text(cam_x + 50, cam_y + 50, "Welcome to Game", pyxel.COLOR_RED)
+            pyxel.text(cam_x + 40, cam_y + 60, "Press RETURN to Start", pyxel.COLOR_WHITE)
+        elif self.state == "PLAY":
+            for entity in self.entities:
+                entity.draw()
+            pyxel.text(cam_x + 5, cam_y + 5, f"Score: {self.score}", pyxel.COLOR_WHITE)
+            pyxel.text(cam_x + 5, cam_y + 15, f"Life: {self.life}", pyxel.COLOR_RED)
+            pyxel.text(cam_x + 5, cam_y + 25, f"Level: {self.level}", pyxel.COLOR_GREEN)
+            pyxel.text(cam_x + 5, cam_y + 35, f"Pos: {self.player.x:.1f},{self.player.y:.1f}", pyxel.COLOR_YELLOW)
+        elif self.state == "GAME_OVER":
+            pyxel.text(cam_x + 50, cam_y + 50, "GAME OVER", pyxel.COLOR_RED)
+            pyxel.text(cam_x + 40, cam_y + 60, "Press RETURN to Restart", pyxel.COLOR_WHITE)
+
+
+# ------------------------------
+# ゲーム起動
+# ------------------------------
+PlatformerGame()
+
     '
   ></pyxel-run>
 </body>
