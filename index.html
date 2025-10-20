@@ -1,157 +1,260 @@
 <!doctype html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8" />
-    <title>ConaStudio</title>
-    <link rel="icon" type="image/png" href="./icon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
-    <style>
-        body {
-            font-family: "Arial", "Helvetica", sans-serif;
-            font-size: 17px;
-            background-color: #fefefe;
-            color: #2a2a2a;
-            margin: 20px;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <title>ConaStudio</title>
+        <link rel="icon" type="image/png" href="./icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="./icon.png" />
+        <style>
+            body {
+                font-family: "Arial", "Helvetica", sans-serif;
+                font-size: 17px;
+                background-color: #fefefe;
+                color: #2a2a2a;
+                margin: 20px;
+            }
 
-        h1 {
-            color: #1e4d7b;
-            font-size: 32px;
-            margin-bottom: 15px;
-        }
+            h1 {
+                color: #1e4d7b;
+                font-size: 32px;
+                margin-bottom: 15px;
+            }
 
-        h3 {
-            color: #333;
-            font-size: 22px;
-            margin-top: 20px;
-        }
+            h3 {
+                color: #333;
+                font-size: 22px;
+                margin-top: 20px;
+            }
 
-        a {
-            color: #1e4d7b;
-            text-decoration: none;
-            margin-right: 12px;
-        }
+            a {
+                color: #1e4d7b;
+                text-decoration: none;
+                margin-right: 12px;
+            }
 
-        a:hover {
-            text-decoration: underline;
-        }
+            a:hover {
+                text-decoration: underline;
+            }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background-color: #fdfdfd;
-            margin-top: 15px;
-        }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                background-color: #fdfdfd;
+                margin-top: 15px;
+            }
 
-        th,
-        td {
-            border: 1px solid #aaa;
-            padding: 6px 10px;
-            text-align: center;
-            font-size: 16px;
-        }
+            th,
+            td {
+                border: 1px solid #aaa;
+                padding: 6px 10px;
+                text-align: center;
+                font-size: 16px;
+            }
 
-        th {
-            background-color: #e8e8e8;
-            font-weight: bold;
-        }
+            th {
+                background-color: #e8e8e8;
+                font-weight: bold;
+            }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
 
-        .section {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    
-    <h1>ConaStudio</h1>
-    <a href="?section=home">Home</a>
-    <a href="?section=apps">Apps</a>
-    <a href="?section=info">Info</a>
-    <a href="?section=policy">Policy (必ずお読みください)</a>
+            .section {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            .logo {
+                font-family: "Fira Sans", sans-serif;
+                font-weight: 100;
+                font-style: normal;
+                vertical-align: top;
+            }
+            .logo_img {
+                padding: 10px;
+            }
+        </style>
 
-    <div id="home" class="section">
-        <h3>Home</h3>
-        <p>※管理者情報</p>
-        <p>連絡先:
-            <a href="https://conastudio.f5.si/contact/" target="_blank">url</a>
-        </p>
-        <p>サポート:
-            <a href="https://conastudio.f5.si/support" target="_blank">url</a>
-        </p>
-    </div>
+        <div
+            class="logo"
+            style="
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                font-family: &quot;Fira Sans&quot;, sans-serif;
+            "
+        >
+            <img
+                class="logo_img"
+                src="./icon.png"
+                alt="Logo"
+                style="height: 50px; width: auto; border: 0px"
+            />
+            <div>
+                <h1
+                    style="
+                        font-size: 36px;
+                        font-weight: 500;
+                        margin: 0;
+                        line-height: 1.1;
+                    "
+                >
+                    ConaStudio
+                </h1>
+                <p
+                    style="
+                        margin: 0px 0 0 0;
+                        font-weight: 200;
+                        font-size: 16px;
+                        color: #555;
+                    "
+                >
+                    High quality applications and powder at low cost
+                </p>
+            </div>
+        </div>
+        <a href="?section=home">Home</a>
+        <a href="?section=apps">Apps</a>
+        <a href="?section=info">Info</a>
+        <a href="?section=policy">Policy (必ずお読みください)</a>
 
-    <div id="info" class="section">
-        <h3>Info</h3>
-        <p>ConaStudioは2025年に設立された非営利団体です。</p>
-        <p>開発にかかる人件費やサーバー費などの出費を抑え、常にアプリを無料で配布しています。</p>
-        <p>すべてのアプリはGitHubで公開しており、ユーザーは自由に改造することが可能です。(※1)</p>
-        <p>ConaStudioは(nyanchu studio)の子プロジェクトとして、独自のアイデアや実験的な開発を推進しています。</p>
-        <a>※1 サイトなどの公開によってセキュリティーなどの問題が発生する可能性のあるサイトは非公開になっています。</a>
-    </div>
+        <fieldset>
+            <legend>Button group</legend>
 
-    <div id="apps" class="section">
-        <h3>Apps</h3>
-        <table id="appsTable">
-            <thead>
-                <tr>
-                    <th>アプリ名</th>
-                    <th>担当者</th>
-                    <th>ダウンロード</th>
-                    <th>RepoURL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Kusoge1</td>
-                    <td>Okabe</td>
-                    <td><a href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/download/v1.02/1.1.1.2.html">Download</a></td>
-                    <td><a href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases">Repo</a></td>
-                </tr>
-                <tr>
-                    <td>Kusoge2</td>
-                    <td>Okabe</td>
-                    <td><a href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/download/v1.01/1.1.1.1.1.html">Download</a></td>
-                    <td><a href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/">Repo</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+            <div id="home" class="section">
+                <h3>Home</h3>
+                <p>※管理者情報</p>
+                <p>
+                    連絡先:
+                    <a href="https://conastudio.f5.si/contact/" target="_blank"
+                        >url</a
+                    >
+                </p>
+                <p>
+                    サポート:
+                    <a href="https://conastudio.f5.si/support" target="_blank"
+                        >url</a
+                    >
+                </p>
+            </div>
 
-    <div id="policy" class="section">
-        <h3>Policy</h3>
-        <img src="./mosaic.png" alt="icon" style="
-                width: 150px;
-                height: 150px;
-                border-radius: 50% !important;
-                object-fit: cover;
-            ">
-        <p>利用規約: by okabe(admin)</p>
-        <p>ConaStudioおよび提供される全てのアプリに関して、以下の規約が適用されます。</p>
-        <ol>
-            <li>いかなる損害についても、ConaStudioは一切責任を負いません。</li>
-            <li>ConaStudioのアプリを使用して、犯罪行為や違法行為に関与することを禁止します。</li>
-        </ol>
-        <p>上記に同意した上で、アプリをご利用ください。</p>
-    </div>
+            <div id="info" class="section">
+                <h3>Info</h3>
+                <p>ConaStudioは2025年に設立された非営利団体です。</p>
+                <p>
+                    開発にかかる人件費やサーバー費などの出費を抑え、常にアプリを無料で配布しています。
+                </p>
+                <p>
+                    すべてのアプリはGitHubで公開しており、ユーザーは自由に改造することが可能です。(※1)
+                </p>
+                <p>
+                    ConaStudioは(nyanchu
+                    studio)の子プロジェクトとして、独自のアイデアや実験的な開発を推進しています。
+                </p>
+                <a
+                    >※1
+                    サイトなどの公開によってセキュリティーなどの問題が発生する可能性のあるサイトは非公開になっています。</a
+                >
+            </div>
 
-    <script>
-        const sections = document.querySelectorAll(".section");
-        function showSection(id) {
-            sections.forEach((sec) => {
-                sec.style.display = sec.id === id ? "block" : "none";
-            });
-        }
-        const params = new URLSearchParams(window.location.search);
-        const section = params.get("section");
-        if (["home", "apps", "info", "policy"].includes(section)) {
-            showSection(section);
-        } else {
-            showSection("home");
-        }
-    </script>
-</body>
+            <div id="apps" class="section">
+                <h3>Apps</h3>
+                <table id="appsTable">
+                    <thead>
+                        <tr>
+                            <th>アプリ名</th>
+                            <th>担当者</th>
+                            <th>ダウンロード</th>
+                            <th>RepoURL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Kusoge1</td>
+                            <td>Okabe</td>
+                            <td>
+                                <a
+                                    href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/download/v1.02/1.1.1.2.html"
+                                    >Download</a
+                                >
+                            </td>
+                            <td>
+                                <a
+                                    href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases"
+                                    >Repo</a
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Kusoge2</td>
+                            <td>Okabe</td>
+                            <td>
+                                <a
+                                    href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/download/v1.01/1.1.1.1.1.html"
+                                    >Download</a
+                                >
+                            </td>
+                            <td>
+                                <a
+                                    href="https://github.com/nyanthu-okabe/NyanthuUtillSoft/releases/"
+                                    >Repo</a
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="policy" class="section">
+                <h3>Policy</h3>
+                <img
+                    src="./mosaic.png"
+                    alt="icon"
+                    style="
+                        width: 150px;
+                        height: 150px;
+                        border-radius: 50% !important;
+                        object-fit: cover;
+                    "
+                />
+                <p>利用規約: by okabe(admin)</p>
+                <p>
+                    ConaStudioおよび提供される全てのアプリに関して、以下の規約が適用されます。
+                </p>
+                <ol>
+                    <li>
+                        いかなる損害についても、ConaStudioは一切責任を負いません。
+                    </li>
+                    <li>
+                        ConaStudioのアプリを使用して、犯罪行為や違法行為に関与することを禁止します。
+                    </li>
+                </ol>
+                <p>上記に同意した上で、アプリをご利用ください。</p>
+            </div>
+        </fieldset>
+        <script>
+            const sections = document.querySelectorAll(".section");
+            function showSection(id) {
+                sections.forEach((sec) => {
+                    sec.style.display = sec.id === id ? "block" : "none";
+                });
+            }
+            const params = new URLSearchParams(window.location.search);
+            const section = params.get("section");
+            if (["home", "apps", "info", "policy"].includes(section)) {
+                showSection(section);
+            } else {
+                showSection("home");
+            }
+        </script>
+    </body>
 </html>
