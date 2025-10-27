@@ -256,6 +256,8 @@
             const section = params.get("section");
             if (["home", "apps", "info", "policy"].includes(section)) {
                 showSection(section);
+            } else if(section == null){
+                showSection("home");
             } else {
                 showSection("404");
             }
