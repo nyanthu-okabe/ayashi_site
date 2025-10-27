@@ -241,6 +241,10 @@
                 </ol>
                 <p>上記に同意した上で、アプリをご利用ください。</p>
             </div>
+        <div id="404" class="section">
+                <h3>404</h3>
+                <p>Page not found</p>
+            </div>
         <script>
             const sections = document.querySelectorAll(".section");
             function showSection(id) {
@@ -253,7 +257,7 @@
             if (["home", "apps", "info", "policy"].includes(section)) {
                 showSection(section);
             } else {
-                showSection("home");
+                showSection("404");
             }
         </script>
     </body>
